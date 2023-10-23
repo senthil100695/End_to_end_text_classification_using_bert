@@ -11,7 +11,6 @@ nltk
 tqdm
 PyYAML
 matplotlib
-torch
 notebook
 boto3
 mypy-boto3-s3
