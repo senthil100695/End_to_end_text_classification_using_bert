@@ -1,9 +1,10 @@
 transformers
 transformers[sentencepiece]
+sentence-transformers
 datasets
 scikit-learn
-tensorflow
-sacrebleu 
+sacrebleu
+scipy
 rouge_score 
 py7zr
 pandas
