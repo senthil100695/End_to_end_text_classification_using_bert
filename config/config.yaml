@@ -12,10 +12,14 @@ data_validation:
   ALL_REQUIRED_FILES: ["article.csv",'data.zip']
 
 
-data_transformation:
-  root_dir: artifacts/data_transformation
-  data_path: artifacts/data_ingestion/samsum_dataset
-  tokenizer_name: 
+data_preprocess:
+  root_dir: artifacts/data_preprocess
+  data_path: artifacts/data_ingestion/article.csv
+  indepent_feature: ['Heading', 'Article.Description', 'Full_Article']
+  drop_feature: ['Article.Banner.Image','Outlets','Id','Tonality']
+  target_feature: 'Article_Type'
+  preprocess_data_path: artifacts/data_preprocess/
+  
 
 model_trainer:
   root_dir: artifacts/model_trainer

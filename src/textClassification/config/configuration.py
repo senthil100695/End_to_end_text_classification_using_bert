@@ -1,7 +1,8 @@
 from textClassification.constants import *
 from textClassification.utils.common import read_yaml, create_directories
 from textClassification.entity import (DataIngestionConfig,
-                                       DataValidationConfig)
+                                       DataValidationConfig,
+                                       DataPreprocessConfig)
 
 class ConfigurationManager:
     def __init__(
@@ -42,3 +43,19 @@ class ConfigurationManager:
         )
 
         return data_validation_config
+    
+    def get_data_preprocess_config(self) -> DataPreprocessConfig:
+        config = self.config.data_preprocess
+
+        create_directories([config.root_dir])
+
+        data_preprocess_config = DataPreprocessConfig(
+            root_dir= config.root_dir,
+            data_path =config.data_path,
+            indepent_feature= config.indepent_feature,
+            drop_feature= config.drop_feature,
+            target_feature= config.target_feature,
+            preprocess_data_path= config.preprocess_data_path,
+        )
+
+        return data_preprocess_config
