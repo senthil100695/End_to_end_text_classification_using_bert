@@ -3,7 +3,8 @@ from textClassification.utils.common import read_yaml, create_directories
 from textClassification.entity import (DataIngestionConfig,
                                        DataValidationConfig,
                                        DataPreprocessConfig,
-                                       BaseModelConfig)
+                                       BaseModelConfig,
+                                       ModeltrainerConfig)
 
 class ConfigurationManager:
     def __init__(
@@ -73,3 +74,19 @@ class ConfigurationManager:
         )
 
         return base_model_config
+    
+    def get_model_trainer_config(self) -> ModeltrainerConfig:
+        config = self.config.model_trainer
+
+        create_directories([config.root_dir])
+
+        model_trainer_config = ModeltrainerConfig(
+            root_dir= config.root_dir,
+            base_model_path =config.base_model_path,
+            model_path= config.model_path,
+            preprocess_data_path = config.preprocess_data_path,
+            targert_feature = config.targert_feature,
+            input_feature = config.input_feature,
+        )
+
+        return model_trainer_config

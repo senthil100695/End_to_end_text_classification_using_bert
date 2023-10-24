@@ -30,3 +30,12 @@ class BaseModelConfig:
     root_dir: Path
     model_name: str
     base_model_path: Path
+
+@dataclass(frozen=True)
+class ModeltrainerConfig:
+    root_dir: Path
+    base_model_path: Path
+    model_path: Path
+    preprocess_data_path: Path 
+    targert_feature : str
+    input_feature : list
