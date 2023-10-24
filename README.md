@@ -13,4 +13,4 @@
 
 # data_url 
 
-https://github.com/senthil100695/Branching_dataset/raw/main/data.zip
+https://github.com/senthil100695/Branching_dataset/raw/main/article.zip
