@@ -24,3 +24,9 @@ class DataPreprocessConfig:
     drop_feature: list
     target_feature: str
     preprocess_data_path: Path
+
+@dataclass(frozen=True)
+class BaseModelConfig:
+    root_dir: Path
+    model_name: str
+    base_model_path: Path

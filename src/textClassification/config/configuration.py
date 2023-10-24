@@ -2,7 +2,8 @@ from textClassification.constants import *
 from textClassification.utils.common import read_yaml, create_directories
 from textClassification.entity import (DataIngestionConfig,
                                        DataValidationConfig,
-                                       DataPreprocessConfig)
+                                       DataPreprocessConfig,
+                                       BaseModelConfig)
 
 class ConfigurationManager:
     def __init__(
@@ -59,3 +60,16 @@ class ConfigurationManager:
         )
 
         return data_preprocess_config
+    
+    def get_base_model_config(self) -> BaseModelConfig:
+        config = self.config.base_model
+
+        create_directories([config.root_dir])
+
+        base_model_config = BaseModelConfig(
+            root_dir= config.root_dir,
+            model_name =config.model_name,
+            base_model_path= config.base_model_path,
+        )
+
+        return base_model_config
