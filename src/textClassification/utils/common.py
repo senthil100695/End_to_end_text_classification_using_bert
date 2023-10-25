@@ -9,6 +9,8 @@ from box import ConfigBox
 from pathlib import Path
 from typing import Any
 
+import json
+
 @ensure_annotations
 def read_yaml(path_to_yaml : Path) -> ConfigBox:
 
@@ -33,3 +35,8 @@ def create_directories(path_to_directories : list, verbose = True):
 def get_size(path: Path) -> str:
     size_in_kb = round(os.path.getsize(path)/1024)
     return f'~ {size_in_kb} KB'
+
+def save_json(data,path):
+        #path = os.path.join(path,'article_type.json')
+        with open(path,'w') as out:
+            json.dump(data,out)

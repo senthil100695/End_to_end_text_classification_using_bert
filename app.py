@@ -6,20 +6,26 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from fastapi.responses import Response
 from textClassification.pipeline.prediction import PredictionPipeline
+from pydantic import BaseModel
 
-
-heading:str = "NTSB Report Provides New Details in Southeast Alaska Helicopter Crash That Killed 3"
-article:str ='<p>The helicopter that crashed in Southeast Alaska in late September, killing three people, entered a 500-foot freefall before dropping to a Glacier Bay National Park beach, according to by the National Transportation Safety Board.&nbsp;The preliminary NTSB report released Friday offers no official probable cause. That determination won&lsquo;t be made until next year at the earliest.</p>'
-
-app = FastAPI()
-
-@app.get("/", tags=["authentication"])
-async def index():
-    return RedirectResponse(url="/docs")
+class Article(BaseModel):
+    heading: str
+    article_data: str
 
 
 
-@app.get("/train")
+application = FastAPI()
+
+#@app.get("/")
+#async def index():
+#    return RedirectResponse(url="/docs")
+@application.get("/")
+def index():
+    return {'message': 'Welcome Home'}
+
+
+
+@application.get("/train")
 async def training():
     try:
         os.system("python main.py")
@@ -29,17 +35,25 @@ async def training():
         return Response(f"Error Occurred! {e}")
     
 
+@application.get('/welcome')
+def get_name(name:str):
+    return {"welcome to my world":f'{name}'}
 
-
-@app.post("/predict")
-async def predict_route(heading,article):
+@application.post("/predict")
+def predict_route(data:Article):
     try:
+        data = data.dict()
+        print(data)
+        heading = data['heading']
+        article_data_ = data['article_data']
         obj = PredictionPipeline()
-        text = obj.predict(heading,article)
+        text = obj.predict(heading,article_data_)
         return text
     except Exception as e:
         raise e
     
 
 if __name__=="__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    #uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(application, host="127.0.0.1", port=8000)
+#uvicorn app:application --reload

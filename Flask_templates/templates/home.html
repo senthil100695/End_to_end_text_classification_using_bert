@@ -1,0 +1,27 @@
+<html>
+<body>
+    <div class="login">
+       <h1>Article type Classification Web APP</h1>
+
+       <div class="content-container">
+        <form action="{{ url_for('result') }}" method="post">
+          <h3>Article Details:</h3>
+          <div>
+            <input type='textarea' class="name-input name mb-3" id="heading" name="heading" placeholder="Article Heading">
+         </div>
+         <div>
+            <input type='textarea' class="name-input name mb-3" id="description" name="description" placeholder="Article Description">
+         </div>
+         <div>
+            <input type='textarea' class="name-input name mb-3" id="article" name="article" placeholder="Full Article">
+         </div>
+
+
+
+          <input class="btn btn-outline-primary" type="submit" value="Submit">
+        </form>
+      </div>
+   
+       
+   <body>
+</html>

@@ -6,13 +6,14 @@ import re
 nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
-
+import json
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from textClassification.entity import DataPreprocessConfig
+from textClassification.utils.common import save_json
 
 le = LabelEncoder()
 stemmer = PorterStemmer()
@@ -44,12 +45,23 @@ class DataPreprocessor:
 
     def convert(self):
         data_path = self.config.data_path
+        
+        #=================================
+        df1 = pd.read_csv(data_path,encoding='cp1252')
+        df1['Article_Type_encode'] = le.fit_transform(df1['Article_Type'].values)
+        df1.drop(['Article.Banner.Image','Heading','Full_Article','Article.Description','Outlets','Id','Tonality'],axis=1,inplace=True)
+        d1 = df1.drop_duplicates('Article_Type').set_index('Article_Type')
+        d1 = d1.to_json()
+        data_path_json = os.path.join(self.config.preprocess_data_path,'article_type.json')
+        save_json(d1,data_path_json)
+        #==================================
+
+        #drop feature#
         df = pd.read_csv(data_path,encoding='cp1252')
         drop_feature = self.config.drop_feature
-
-        #drop feature
         df.drop(drop_feature,axis=1,inplace=True)
-
+       
+        
         #data Preprocssing and store preprocessed data into new column
 
         indepent_feature = self.config.indepent_feature

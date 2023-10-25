@@ -21,6 +21,7 @@ import sys
 import numpy as np
 from sklearn.metrics import accuracy_score
 from textClassification.entity import (ModeltrainerConfig)
+from textClassification.utils.common import save_json
 
 class ModelTrainer:
     def __init__(self, config: ModeltrainerConfig):
@@ -85,20 +86,20 @@ class ModelTrainer:
         input_feature = self.config.input_feature
         # embedding for train data
         heading_embedding = input_feature[0]
-        #description_embedding = input_feature[1]
+        description_embedding = input_feature[1]
         article_embedding = input_feature[2]
 
         heading_embedding = sentence_model.encode(df_train[heading_embedding])
-        #description_embedding = sentence_model.encode(df_train[description_embedding])
+        description_embedding = sentence_model.encode(df_train[description_embedding])
         article_embedding = sentence_model.encode(df_train[article_embedding])
 
         #test embedding 
         heading_emb = input_feature[0]
-        #description_emb = input_feature[1]
+        description_emb = input_feature[1]
         article_emb = input_feature[2]
 
         head_test_emb = sentence_model.encode(df_test[heading_emb])
-        #desc_test_emb = sentence_model.encode(df_test[description_emb])
+        desc_test_emb = sentence_model.encode(df_test[description_emb])
         art_test_emb = sentence_model.encode(df_test[article_emb]) 
 
         #model init
@@ -158,6 +159,8 @@ class ModelTrainer:
         print('@@@@@@@@@@@@@@ : model_evaluation complete')
         ## To get best model score from dict
         ## To get best model score from dict
+
+
         best_model_score = max(sorted(model_report.values()))
 
             ## To get best model name from dict
@@ -181,7 +184,16 @@ class ModelTrainer:
         predicted=best_model.predict(head_test_emb)
 
         accuracy = accuracy_score(y_test, predicted)
+
         print('@@@@@@@@@@@@@@ accuracy_score:', accuracy)
+
+        model_metrics = {'Best Model Name' :best_model_name,
+                         'Accuracy score': accuracy }
+        
+        head_model_metrics_path = os.path.join(self.config.model_path,'heading_metrics.json') 
+        save_json(model_metrics,head_model_metrics_path)
+
+
 
         #article model########################################## 
         model_report:dict=self.evaluate_models(X_train=article_embedding,y_train=y_train,X_test=art_test_emb,y_test=y_test,
@@ -211,6 +223,53 @@ class ModelTrainer:
 
         accuracy = accuracy_score(y_test, predicted)
         print('@@@@@@@@@@@@@@ accuracy_score:', accuracy)
+
+        model_metrics = {'Best Model Name' :best_model_name,
+                         'Accuracy score': accuracy }
+        
+        article_model_metrics_path = os.path.join(self.config.model_path,'article_metrics.json') 
+        save_json(model_metrics,article_model_metrics_path)
+
+
+
+
+
+
+        #description model########################################## 
+        model_report:dict=self.evaluate_models(X_train=description_embedding,y_train=y_train,X_test=desc_test_emb,y_test=y_test,
+                                             models=models,param=params)
+
+        best_model_score = max(sorted(model_report.values()))
+
+            ## To get best model name from dict
+
+        best_model_name = list(model_report.keys())[
+                list(model_report.values()).index(best_model_score)
+            ]
+        best_model = models[best_model_name]
+
+        print('best_model_name: ',best_model_name,' best_model_score :' ,best_model_score)
+
+        if best_model_score<0.6:
+                print('No best model found')
+        
+        save_model_path = self.config.model_path+'desc_model.pkl'
+        self.save_object(
+                file_path=save_model_path,
+                obj=best_model
+            )
+
+        predicted=best_model.predict(desc_test_emb)
+
+        accuracy = accuracy_score(y_test, predicted)
+        print('@@@@@@@@@@@@@@ accuracy_score:', accuracy)
+
+        model_metrics = {'Best Model Name' :best_model_name,
+                         'Accuracy score': accuracy }
+        
+        description_model_metrics_path = os.path.join(self.config.model_path,'description_metrics.json') 
+        save_json(model_metrics,description_model_metrics_path)
+
     
     def save_object(self,file_path, obj):
         try:
