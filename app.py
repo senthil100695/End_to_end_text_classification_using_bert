@@ -1,59 +1,44 @@
-from fastapi import FastAPI
-import uvicorn
-import sys
-import os
-from fastapi.templating import Jinja2Templates
-from starlette.responses import RedirectResponse
-from fastapi.responses import Response
+
+from flask import Flask, render_template, request, url_for, redirect,Response
 from textClassification.pipeline.prediction import PredictionPipeline
-from pydantic import BaseModel
+import os
 
-class Article(BaseModel):
-    heading: str
-    article_data: str
+ 
 
+app = Flask(__name__, template_folder='Flask_templates\\templates', static_folder='Flask_templates\\static')
+ 
 
-
-application = FastAPI()
-
-#@app.get("/")
-#async def index():
-#    return RedirectResponse(url="/docs")
-@application.get("/")
-def index():
-    return {'message': 'Welcome Home'}
+ 
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    if request.method == 'POST':
+        heading = request.form["Article Heading"]
+        description = request.form["Article Description"]
+        article = request.form["Full Article"]
 
 
+        return redirect(url_for('result', name=result))
+    return render_template('home.html')
 
-@application.get("/train")
-async def training():
-    try:
+@app.route("/result", methods=['GET', 'POST'])
+def result():
+    heading = request.form.get('heading')
+    description = request.form.get('description')
+    article = request.form.get('article')
+
+    
+    obj = PredictionPipeline()
+    result = obj.predict(heading,description,article)
+    name = result
+    print('@@@@@@@@@@@@@@@@@',result)
+    #return render_template('index.html',result=result)
+
+    return render_template("result.html", name=name)
+
+@app.get("/train")
+def training():
         os.system("python main.py")
         return Response("Training successful !!")
 
-    except Exception as e:
-        return Response(f"Error Occurred! {e}")
-    
-
-@application.get('/welcome')
-def get_name(name:str):
-    return {"welcome to my world":f'{name}'}
-
-@application.post("/predict")
-def predict_route(data:Article):
-    try:
-        data = data.dict()
-        print(data)
-        heading = data['heading']
-        article_data_ = data['article_data']
-        obj = PredictionPipeline()
-        text = obj.predict(heading,article_data_)
-        return text
-    except Exception as e:
-        raise e
-    
-
-if __name__=="__main__":
-    #uvicorn.run(app, host="0.0.0.0", port=8080)
-    uvicorn.run(application, host="127.0.0.1", port=8000)
-#uvicorn app:application --reload
+if __name__=='__main__':
+    app.run(debug = True)
